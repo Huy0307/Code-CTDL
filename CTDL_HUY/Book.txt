@@ -1,0 +1,9 @@
+-----------------------------------
+| Book code: 452
+| Name of book: Gun
+| Author: HE
+| Genre: War
+| Publisher: HN
+| Quantity: 120
+
+-----------------------------------
