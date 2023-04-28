@@ -5,6 +5,7 @@
 #include <sstream>
 #include <chrono>
 #include <thread>
+
 using namespace std;
 
 struct Book
@@ -20,8 +21,14 @@ struct Book
     Book *next;
 };
 struct BanDoc {
+	string keyword;
+	string field;
     string IDSV;
     string name;
+    string gioitinh;
+    string birthdate;
+    string cls;
+    string number;
     BanDoc *next;
 };
 struct TreeNode
@@ -33,7 +40,7 @@ struct TreeNode
 BanDoc *headDoc = nullptr;
 Book *head = nullptr;
 TreeNode *root = nullptr;
-enum SortField { TITLE, BOOK_ID, AUTHOR, GENRE, PUBLISHER, FIELD, KEYWORD, QUANTITY };
+enum SortField { TITLE, BOOK_ID, AUTHOR, GENRE, PUBLISHER, QUANTITY };
 
 void insertNodeBy(TreeNode *&tree, Book book, SortField field) {
     if (tree == nullptr) {
@@ -50,12 +57,11 @@ void insertNodeBy(TreeNode *&tree, Book book, SortField field) {
                 }
                 break;
             case BOOK_ID:
-                if (book.bookID < tree->data.bookID) {
-                    insertNodeBy(tree->left, book, field);
-                }
-                else {
-                    insertNodeBy(tree->right, book, field);
-                }
+                if (stoi(book.bookID) < stoi(tree->data.bookID)) {
+  					insertNodeBy(tree->left, book, field);
+				} else {
+  					insertNodeBy(tree->right, book, field);
+				}
                 break;
             case AUTHOR:
                 if (book.author < tree->data.author) {
@@ -75,22 +81,6 @@ void insertNodeBy(TreeNode *&tree, Book book, SortField field) {
                 break;
             case PUBLISHER:
                 if (book.publisher < tree->data.publisher) {
-                    insertNodeBy(tree->left, book, field);
-                }
-                else {
-                    insertNodeBy(tree->right, book, field);
-                }
-                break;
-            case FIELD:
-                if (book.field < tree->data.field) {
-                    insertNodeBy(tree->left, book, field);
-                }
-                else {
-                    insertNodeBy(tree->right, book, field);
-                }
-                break;
-            case KEYWORD:
-                if (book.keyword < tree->data.keyword) {
                     insertNodeBy(tree->left, book, field);
                 }
                 else {
@@ -118,11 +108,32 @@ void createBinarySearchTreeBy(SortField field) {
         temp = temp->next;
     }
 }
-void sortListByTree(SortField field)
-{
-    root = nullptr;
-    createBinarySearchTreeBy(field);
-    //displayTree(root);
+void deleteTree(TreeNode *&tree) {
+	if (tree != nullptr) {
+		deleteTree(tree->left);
+		deleteTree(tree->right);
+		delete tree;
+		tree = nullptr;
+	}
+}
+void displayTree(TreeNode* tree) {
+    if (tree != nullptr) {
+        displayTree(tree->left);
+        cout << "| " << setw(6) << left << tree->data.bookID << " | " << setw(53) << left << tree->data.title << " | " << setw(20) << left << tree->data.author << " | " << setw(15) << left << tree->data.genre << " | " << setw(40) << left << tree->data.publisher << " | " << setw(8) << left << tree->data.quantity << " |\n";
+        displayTree(tree->right);
+    }
+    else {
+        cout << "+--------+-------------------------------------------------------+----------------------+-----------------+------------------------------------------+----------+\n";
+    }
+}
+void displaySortListByTree(SortField field) {
+	// Xóa cây nh? phân tìm ki?m cu (n?u có)
+	deleteTree(root);
+	createBinarySearchTreeBy(field);
+	cout << "+--------+-------------------------------------------------------+----------------------+-----------------+------------------------------------------+----------+" << endl;
+    cout << "| BookID | Title                                                 | Author               | Genre           | Publisher                                | Quantity |" << endl;
+    cout << "+--------+-------------------------------------------------------+----------------------+-----------------+------------------------------------------+----------+" << endl;
+	displayTree(root);
 }
 void addBook(string bookID, string title, string author, string genre, string publisher, int quantity)
 {
@@ -152,18 +163,21 @@ void addBook(string bookID, string title, string author, string genre, string pu
 
 void displayBook()
 {
+    int count = 0;
     Book *temp = head;
+    cout << "+--------+-------------------------------------------------------+----------------------+-----------------+------------------------------------------+----------+" << endl;
+    cout << "| BookID | Title                                                 | Author               | Genre           | Publisher                                | Quantity |" << endl;
+    cout << "+--------+-------------------------------------------------------+----------------------+-----------------+------------------------------------------+----------+" << endl;
     while (temp != nullptr)
     {
-        cout << "-----------------------------------" << endl;
-        cout << "Book ID: " << temp->bookID << endl;
-        cout << "Book title: " << temp->title << endl;
-        cout << "Author: " << temp->author << endl;
-        cout << "Category: " << temp->genre << endl;
-        cout << "Publishing company: " << temp->publisher << endl;
-        cout << "Quantity: " << temp->quantity << endl;
-        cout << "-----------------------------------" << endl;
+        cout << "| " << setw(6) << left << temp->bookID << " | " << setw(53) << left << temp->title << " | " << setw(20) << left << temp->author << " | " << setw(15) << left << temp->genre << " | " << setw(40) << left << temp->publisher << " | " << setw(8) << left << temp->quantity << " |" << endl;
+        cout << "+--------+-------------------------------------------------------+----------------------+-----------------+------------------------------------------+----------+" << endl;
         temp = temp->next;
+        count++;
+        if (count == 50)
+        {
+            break;
+        }
     }
 }
 
@@ -197,6 +211,39 @@ Book* searchBook(string keyword, string field)
     return nullptr; 
 }
 
+BanDoc* searchHuman(string keyword, string field)
+{
+    BanDoc *temp = headDoc;
+    while (temp != nullptr)
+    {
+        if (field == "IDSV" && temp->IDSV == keyword)
+        {
+            return temp;
+        }
+        else if (field == "name" && temp->name == keyword)
+        {
+            return temp;
+        }
+        else if (field == "gioitinh" && temp->gioitinh == keyword)
+        {
+            return temp;
+        }
+        else if (field == "birthdate" && temp->birthdate == keyword)
+        {
+            return temp;
+        }
+        else if (field == "number" && temp->number == keyword)
+        {
+            return temp;
+        }
+        else if (field == "cls" && temp->cls == keyword)
+        {
+            return temp;
+        }
+        temp = temp->next;
+    }
+    return nullptr; 
+}
 void adjustBook(string keyword, string field, string newname_book, string newtacgia, string newtheloai, string newnxb, int newquantity)
 {
     Book *bookToAdjust = searchBook(keyword, field);
@@ -216,13 +263,25 @@ void findBook(string keyword, string field)
         cout << "Book not found in the library." << endl;
         return;
     }
-    cout << "-----------------------------------" << endl;
-    cout << "Book ID: " << bookToFind->bookID << endl;
-    cout << "Book title: " << bookToFind->title << endl;
-    cout << "Author: " << bookToFind->author << endl;
-    cout << "Category:" << bookToFind->genre << endl;
-    cout << "Publishing company:" << bookToFind->publisher << endl;
-    cout << "Quantity:" << bookToFind->quantity << endl;
+    cout << "+------------+-------------------------------------------------------+------------------------+-----------------+------------------------------------------+----------+" << endl;
+    cout << "| BookID     | Title                                                 | Author                 | Genre           | Publisher                                | Quantity |" << endl;
+    cout << "+------------+-------------------------------------------------------+------------------------+-----------------+------------------------------------------+----------+" << endl;
+    cout << "| " << setw(10) << left << bookToFind->bookID << " | " << setw(53) << left << bookToFind->title << " | " << setw(22) << left << bookToFind->author << " | " << setw(15) << left << bookToFind->genre << " | " << setw(40) << left << bookToFind->publisher << " | " << setw(8) << left << bookToFind->quantity << " |" << endl;
+    cout << "+------------+-------------------------------------------------------+------------------------+-----------------+------------------------------------------+----------+" << endl;
+}
+void findHuman(string keyword, string field)
+{
+    BanDoc *humanToFind = searchHuman(keyword, field);
+    if (humanToFind == nullptr)
+    {
+        cout << "Not found in the system." << endl;
+        return;
+    }
+    cout << "+------------+-------------------------------------------------------+------------------------+-------------------------+------------------------------------------+----------+" << endl;
+    cout << "|ID          | Name                                                  | Sex                    | Date of birth           | Number                                   | Class    |" << endl;
+    cout << "+------------+-------------------------------------------------------+------------------------+-------------------------+------------------------------------------+----------+" << endl;
+    cout << "| " << setw(10) << left << humanToFind->IDSV << " | " << setw(53) << left << humanToFind->name << " | " << setw(22) << left << humanToFind->gioitinh << " | " << setw(23) << left << humanToFind->birthdate << " | " << setw(40) << left << humanToFind->number << " | " << setw(8) << left << humanToFind->cls << " |" << endl;
+    cout << "+------------+-------------------------------------------------------+------------------------+-------------------------+------------------------------------------+----------+" << endl;
 }
 void deleteBook(string bookID)
 {
@@ -333,7 +392,16 @@ void displaySortedBooks(string sortBy)
     // Delete the temporary array
     delete[] bookArray;
 }
-
+void returnToPreviousFunction() {
+    int input;
+    do {
+        std::cout << "Enter 0 to return to the previous function: ";
+        std::cin >> input;
+    } while (input != 0);
+    std::cout << "Exiting.....";
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    system("cls");
+}
 void exportData(string filename)
 {
     ofstream outputFile(filename);
@@ -364,7 +432,7 @@ void InterfaceBook()
         cout << "0. Exit the program" << endl;
         cout << "========================================" << endl;
         cout << "Select function  (0-7): ";
-        
+        SortField field;
 	    int sort;
 	    int choice;
 	    int find;
@@ -373,12 +441,13 @@ void InterfaceBook()
         switch (choice){
     
         case 1:
+        	system("cls");
             displayBook();
-            std::this_thread::sleep_for(std::chrono::milliseconds(10000)); // d?ng chuong trình trong 10 giây
-            system("cls"); // xóa màn hình
+            returnToPreviousFunction();
             break;
         case 2:
         {
+        	system("cls");
             string bookID, title, author, genre, publisher;
             int quantity;
             cout << "Enter book ID: ";
@@ -399,12 +468,12 @@ void InterfaceBook()
             	cout << "Wrong enter";
             	cin >> quantity;}
             addBook(bookID, title, author, genre, publisher, quantity);
-            std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // d?ng chuong trình trong 2 giây
-            system("cls"); // xóa màn hình
+            returnToPreviousFunction();
             break;
         }
         case 3:
         {
+        	system("cls");
             string newname_book;
             string newtacgia;
             string newtheloai;
@@ -422,7 +491,8 @@ void InterfaceBook()
 				cin >> find;
 				switch (find){ 
 				case 1:
-				{ 
+				{
+					system("cls");
 					string ID;
 					string bookID = "bookID"; 
 					cout << "Find by ID: ";       	
@@ -447,12 +517,12 @@ void InterfaceBook()
 		            	cout << "Wrong enter";
 		            	cin >> newquantity;}
 		            adjustBook(ID, bookID, newname_book, newtacgia, newtheloai, newnxb, newquantity);
-		            std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // d?ng chuong trình trong 2 giây
-		            system("cls"); // xóa màn hình		    		
+		            returnToPreviousFunction();		    		
 		            break;
 				} 
 				case 2:
-				{ 
+				{
+				    system("cls"); 
 					string name;
 					string title = "title";       	
 		        	cout << "Find by title: ";
@@ -477,9 +547,7 @@ void InterfaceBook()
 		            	cout << "Wrong enter";
 		            	cin >> newquantity;}
 		            adjustBook(name, title, newname_book, newtacgia, newtheloai, newnxb, newquantity);
-		            std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // d?ng chuong trình trong 2 giây
-		            system("cls"); // xóa màn hình	
-		    		
+		            returnToPreviousFunction();	
 		            break;
 				}  			
 				}
@@ -488,7 +556,8 @@ void InterfaceBook()
         }
         case 4:
         {
-            string bookID;
+            system("cls");
+			string bookID;
             cin >> bookID;            
 			cout << "Enter the book ID to be deleted: ";
             deleteBook(bookID);
@@ -498,7 +567,8 @@ void InterfaceBook()
         }
         case 5:
         {
-        	do{
+        	system("cls");
+			do{
                 cout << "================= MENU =================" << endl;
                 cout << "1. Find by ID" << endl;
                 cout << "2. Find by title" << endl;
@@ -513,57 +583,57 @@ void InterfaceBook()
 				switch (find){ 
 				case 1:
 				{ 
+					system("cls");
 					string ID;
 					string bookID = "bookID"; 
 					cout << "Find by ID: ";       	
 		    		cin >> ID;
 		    		findBook(ID,bookID);
-		    		std::this_thread::sleep_for(std::chrono::milliseconds(5000)); // d?ng chuong trình trong 5 giây
-		            system("cls"); // xóa màn hình
+		    		returnToPreviousFunction();
 		            break;
 				} 
 				case 2:
 				{ 
+					system("cls");
 					string name;
 					string title = "title";       	
 		        	cout << "Find by title: ";
 		    		cin >> name;
 		    		findBook(name,title);
-		    		std::this_thread::sleep_for(std::chrono::milliseconds(5000)); // d?ng chuong trình trong 5 giây
-		            system("cls"); // xóa màn hình
+		    		returnToPreviousFunction();
 		            break;
 				} 
 				case 3:
 				{ 
+					system("cls");
 					string authors; 
 					string author = "author";       	
 		        	cout << "Find by author:";
 		    		cin >> authors;
 		    		findBook(authors,author);
-		    		std::this_thread::sleep_for(std::chrono::milliseconds(10000)); // d?ng chuong trình trong 10 giây
-		            system("cls"); // xóa màn hình
+		    		returnToPreviousFunction();
 		            break;
 				} 
 				case 4:
 				{ 
+					system("cls");
 					string genres;
 					string genre = "genre";       	
 		        	cout << "Find by genre:";
 		    		cin >> genres;
 		    		findBook(genres,genre);
-		    		std::this_thread::sleep_for(std::chrono::milliseconds(10000)); // d?ng chuong trình trong 10 giây
-		            system("cls"); // xóa màn hình
+		    		returnToPreviousFunction();
 		            break;
 				}
 				case 5:
 				{ 
+					system("cls");
 					string publishers;
 					string publisher = "publisher";        	
 		        	cout << "Find by publisher:";
 		    		cin >> publishers;
 		    		findBook(publishers,publisher);
-		    		std::this_thread::sleep_for(std::chrono::milliseconds(10000)); // d?ng chuong trình trong 10 giây
-		            system("cls"); // xóa màn hình
+		    		returnToPreviousFunction();
 		            break;
 				}  			
 				}
@@ -572,6 +642,7 @@ void InterfaceBook()
         }
         case 6:
         {
+        	system("cls");
             do
             {
 
@@ -581,43 +652,46 @@ void InterfaceBook()
                 cout << "3. Arrange by author" << endl;
                 cout << "0. Exit the program" << endl;
                 cout << "========================================" << endl;
-
                 cout << "Select function (0-3): ";
                 cin >> sort;
                 switch (sort)
                 {
                 case 1:
                 {
-                    cout << "Arrange by title:";
-                    string sortBy = "title";
-                    displaySortedBooks(sortBy);
-                    std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // d?ng chuong trình trong 2 giây
-                    system("cls"); // xóa màn hình
+                    system("cls");
+					cout << "Arrange by title:\n";
+                    displaySortListByTree(TITLE);
+//                    string sortBy = "title";
+//                    displaySortedBooks(sortBy);
+                    returnToPreviousFunction();
                     break;
                 }
                 case 2:
                 {
-                    cout << "Arrange by ID:";
-                    string sortBy = "bookID";
-                    displaySortedBooks(sortBy);
-                    std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // d?ng chuong trình trong 2 giây
-                    system("cls"); // xóa màn hình
+                    system("cls");
+					cout << "Arrange by ID:\n";
+                    displaySortListByTree(BOOK_ID);
+//                    string sortBy = "bookID";
+//                    displaySortedBooks(sortBy);
+                    returnToPreviousFunction();
                     break;
                 }
                 case 3:
                 {
-                    cout << "Arrange by author:";
-                    string sortBy = "author";
-                    displaySortedBooks(sortBy);
-                    std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // d?ng chuong trình trong 2 giây
-                    system("cls"); // xóa màn hình
+                    system("cls");
+					cout << "Arrange by author:\n";
+                    displaySortListByTree(AUTHOR);
+
+//                    string sortBy = "author";
+//                    displaySortedBooks(sortBy);
+                    returnToPreviousFunction();
                     break;
                 }
                 case 0:
                 {
-                    cout << "Exiting...." << endl;
-                    std::this_thread::sleep_for(std::chrono::milliseconds(500)); // d?ng chuong trình trong 2 giây
-                    system("cls"); // xóa màn hình
+                    system("cls");
+					cout << "Exiting...." << endl;
+					system("cls");
                     break;
                 }
                 }
@@ -626,10 +700,10 @@ void InterfaceBook()
         }
         case 7:
         {
-            exportData("Sach.txt");
+            system("cls");
+			exportData("Sach.txt");
             cout << "Data saved to file Sach.txt" << endl;
-            std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // d?ng chuong trình trong 2 giây
-            system("cls"); // xóa màn hình
+            returnToPreviousFunction();
             break;
         }
         case 0:
@@ -732,44 +806,48 @@ void InterfaceBanDoc() {
 	readFromFilehuman("human.txt");
     while (true) {
         cout << "========== MENU ==========" << endl;
-        cout << "1. Hien thi thong tin ban doc" << endl;
-        cout << "2. Them ban doc" << endl;
-        cout << "3. Xoa ban doc" << endl;
-        cout << "4. Luu thong tin" << endl;
-        cout << "5. Thoat" << endl;
+        cout << "1. Show reader information" << endl;
+        cout << "2. Add reader" << endl;
+        cout << "3. Delete reader" << endl;
+        cout << "4. Save information" << endl;
+        cout << "5. Exit" << endl;
         cout << "==========================" << endl;
-        cout << "Nhap lua chon: ";
+        cout << "Select choice: ";
         int choice;
         cin >> choice;
         
         switch (choice) {
             case 1:
-                DisplayBanDoc();
+                system("cls");
+				DisplayBanDoc();
                 break;
             case 2:
                 {
-                    string IDSV;
+                    system("cls");
+					string IDSV;
                     string name;
-                    cout << "Nhap ma so sinh vien: ";
+                    cout << "Enter student's ID: ";
                     cin >> IDSV;
-                    cout << "Nhap ten sinh vien: ";
+                    cout << "Enter student's name: ";
                     cin >> name;
                     addBanDoc(IDSV, name);
-                    cout << "Them ban doc thanh cong!" << endl;
+                    cout << "Add succes!" << endl;
                 }
                 break;
             case 3:
                 {
-                    string IDSV;
-                    cout << "Nhap ma so sinh vien cua ban doc can xoa: ";
+                    system("cls");
+					string IDSV;
+                    cout << "Enter ID to delete: ";
                     cin >> IDSV;
                     DeleteBanDoc(IDSV);
-                    cout << "Xoa ban doc thanh cong!" << endl;
+                    cout << "Delete success!" << endl;
                 }
                 break;
             case 4:
 		        {
-		            exportDatahuman("human.txt");
+		            system("cls");
+					exportDatahuman("human.txt");
 		            cout << "Data saved to file human.txt" << endl;
 		            std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // d?ng chuong trình trong 2 giây
 		            system("cls"); // xóa màn hình
@@ -778,7 +856,10 @@ void InterfaceBanDoc() {
             case 5:
                 return;
             default:
-                cout << "Lua chon khong hop le, vui long thu lai!" << endl;
+            	system("cls");
+                cout << "Error, please select again!" << endl;
+                std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // d?ng chuong trình trong 2 giây
+		        system("cls"); // xóa màn hình
         }
         
         cout << endl;
@@ -789,20 +870,20 @@ void Interface_main(){
 	system("cls");
 	int choice;
     int find;
-	    cout << "                NHOM 3___________________________________________  \n";
-	    cout << "               +=================================================+ \n";
-	    cout << "               |         CHUONG TRINH QUAN LY THU VIEN           | \n";
-	    cout << "               |-------------------------------------------------| \n";
-	    cout << "               |                                                 | \n";
-	    cout << "               |  1. Quan ly sach trong Thu vien.                | \n";
-	    cout << "               |  2. Quan ly ban doc.                            | \n";
-	    cout << "               |  3. Exit                                        | \n";
-	    cout << "               |                                                 | \n";
-	    cout << "               |                                                 | \n";
-	    cout << "               |                                                 | \n";
-	    cout << "               +-------------------------------------------------+ \n";
+	    cout << "               	 NHOM 3___________________________________________  \n";
+	    cout << "               	+=================================================+ \n";
+	    cout << "               	|          Library management software            | \n";
+	    cout << "               	|-------------------------------------------------| \n";
+	    cout << "               	|                                                 | \n";
+	    cout << "               	|  1. BOOK MANAGEMENT                             | \n";
+	    cout << "               	|  2. CUSTOMER MANAGEMENT                         | \n";
+	    cout << "               	|  3. Exit                                        | \n";
+	    cout << "               	|                                                 | \n";
+	    cout << "               	|                                                 | \n";
+	    cout << "               	|                                                 | \n";
+	    cout << "               	+-------------------------------------------------+ \n";
 
-        cout << "Select function  (1-3): ";
+        cout << "			Select function  (1-3): ";
         cin >> choice;
 
         switch (choice)
