@@ -5,7 +5,9 @@
 #include <sstream>
 #include <chrono>
 #include <thread>
+
 using namespace std;
+
 struct Book
 {
     string bookID;
@@ -93,7 +95,7 @@ void insertNodeBy(TreeNode *&tree, Book book, SortField field) {
                     insertNodeBy(tree->right, book, field);
                 }
                 break;
-            default: // Tru?ng h?p không h?p l?
+            default: // Tru?ng h?p khÃ´ng h?p l?
                 std::cout << "Invalid sort field!\n";
                 break;
         }
@@ -125,64 +127,13 @@ void displayTree(TreeNode* tree) {
     }
 }
 void displaySortListByTree(SortField field) {
-	// Xóa cây nh? phân tìm ki?m cu (n?u có)
+	// XÃ³a cÃ¢y nh? phÃ¢n tÃ¬m ki?m cu (n?u cÃ³)
 	deleteTree(root);
 	createBinarySearchTreeBy(field);
 	cout << "+--------+-------------------------------------------------------+----------------------+-----------------+------------------------------------------+----------+" << endl;
     cout << "| BookID | Title                                                 | Author               | Genre           | Publisher                                | Quantity |" << endl;
     cout << "+--------+-------------------------------------------------------+----------------------+-----------------+------------------------------------------+----------+" << endl;
 	displayTree(root);
-}
-void displaySortedHuman(string sortBy)
-{
-    if (headDoc == nullptr)
-    {
-        cout << "The information system is empty." << endl;
-        return;
-    }
-    // Copy the linked list to an array
-    int listSize = 0;
-    BanDoc *temp = headDoc;
-    while (temp != nullptr)
-    {
-        listSize++;
-        temp = temp->next;
-    }
-    BanDoc *humanArray = new BanDoc[listSize];
-    temp = headDoc;
-    for (int i = 0; i < listSize; i++)
-    {
-        humanArray[i] = *temp;
-        temp = temp->next;
-    }
-    // Sort the array using insertSort
-    for (int i = 1; i < listSize; i++)
-    {
-        BanDoc key = humanArray[i];
-        int j = i - 1;
-        while (j >= 0 && (
-            (sortBy == "IDSV" && humanArray[j].IDSV > key.IDSV) ||
-            (sortBy == "name" && humanArray[j].name > key.name) ||
-            (sortBy == "cls" && humanArray[j].cls > key.cls)))
-        {
-            humanArray[j + 1] = humanArray[j];
-            j--;
-        }
-        humanArray[j + 1] = key;
-    }
-    // Display the sorted array
-    cout << "-----------------------------------" << endl;
-    cout << "List of books sorted by " << sortBy << ":" << endl;
-    cout << "+------------+-------------------------------------------------------+------------------------+-------------------------+------------------------------------------+-------------+" << endl;
-    cout << "|ID          | Name                                                  | Sex                    | Date of birth           | Number                                   | Class       |" << endl;
-    cout << "+------------+-------------------------------------------------------+------------------------+-------------------------+------------------------------------------+-------------+" << endl;
-    for (int i = 0; i < listSize; i++)
-    {
-        cout << "| " << setw(10) << left << humanArray[i].IDSV << " | " << setw(53) << left << humanArray[i].name << " | " << setw(22) << left << humanArray[i].gioitinh << " | " << setw(23) << left << humanArray[i].birthdate << " | " << setw(40) << left << humanArray[i].number << " | " << setw(11) << left << humanArray[i].cls << " |" << endl;
-    	cout << "+------------+-------------------------------------------------------+------------------------+-------------------------+------------------------------------------+-------------+" << endl;
-    }
-    // Delete the temporary array
-    delete[] humanArray;
 }
 void addBook(string bookID, string title, string author, string genre, string publisher, int quantity)
 {
@@ -212,6 +163,7 @@ void addBook(string bookID, string title, string author, string genre, string pu
 
 void displayBook()
 {
+    int count = 0;
     Book *temp = head;
     cout << "+--------+-------------------------------------------------------+----------------------+-----------------+------------------------------------------+----------+" << endl;
     cout << "| BookID | Title                                                 | Author               | Genre           | Publisher                                | Quantity |" << endl;
@@ -221,6 +173,11 @@ void displayBook()
         cout << "| " << setw(6) << left << temp->bookID << " | " << setw(53) << left << temp->title << " | " << setw(20) << left << temp->author << " | " << setw(15) << left << temp->genre << " | " << setw(40) << left << temp->publisher << " | " << setw(8) << left << temp->quantity << " |" << endl;
         cout << "+--------+-------------------------------------------------------+----------------------+-----------------+------------------------------------------+----------+" << endl;
         temp = temp->next;
+        count++;
+        if (count == 50)
+        {
+            break;
+        }
     }
 }
 
@@ -297,16 +254,7 @@ void adjustBook(string keyword, string field, string newname_book, string newtac
     bookToAdjust->quantity = newquantity;
     cout << "Book information updated successfully." << endl;
 }
-void adjustHuman(string keyword, string field, string newname, string newbirthdate, string newgioitinh, string newnumber, string newcls)
-{
-    BanDoc *humanToAdjust = searchHuman(keyword, field);
-    humanToAdjust->birthdate = newbirthdate;
-    humanToAdjust->name = newname;
-    humanToAdjust->gioitinh = newgioitinh;
-    humanToAdjust->cls = newcls;
-    humanToAdjust->number = newnumber;
-    cout << "Book information updated successfully." << endl;
-}
+
 void findBook(string keyword, string field)
 {
     Book *bookToFind = searchBook(keyword, field);
@@ -329,11 +277,11 @@ void findHuman(string keyword, string field)
         cout << "Not found in the system." << endl;
         return;
     }
-    cout << "+------------+-------------------------------------------------------+------------------------+-------------------------+------------------------------------------+-------------+" << endl;
-    cout << "|ID          | Name                                                  | Sex                    | Date of birth           | Number                                   | Class       |" << endl;
-    cout << "+------------+-------------------------------------------------------+------------------------+-------------------------+------------------------------------------+-------------+" << endl;
-    cout << "| " << setw(10) << left << humanToFind->IDSV << " | " << setw(53) << left << humanToFind->name << " | " << setw(22) << left << humanToFind->gioitinh << " | " << setw(23) << left << humanToFind->birthdate << " | " << setw(40) << left << humanToFind->number << " | " << setw(11) << left << humanToFind->cls << " |" << endl;
-    cout << "+------------+-------------------------------------------------------+------------------------+-------------------------+------------------------------------------+-------------+" << endl;
+    cout << "+------------+-------------------------------------------------------+------------------------+-------------------------+------------------------------------------+----------+" << endl;
+    cout << "|ID          | Name                                                  | Sex                    | Date of birth           | Number                                   | Class    |" << endl;
+    cout << "+------------+-------------------------------------------------------+------------------------+-------------------------+------------------------------------------+----------+" << endl;
+    cout << "| " << setw(10) << left << humanToFind->IDSV << " | " << setw(53) << left << humanToFind->name << " | " << setw(22) << left << humanToFind->gioitinh << " | " << setw(23) << left << humanToFind->birthdate << " | " << setw(40) << left << humanToFind->number << " | " << setw(8) << left << humanToFind->cls << " |" << endl;
+    cout << "+------------+-------------------------------------------------------+------------------------+-------------------------+------------------------------------------+----------+" << endl;
 }
 void deleteBook(string bookID)
 {
@@ -388,6 +336,62 @@ void readFromFile(string filename)
 
     inFile.close();
 }
+void displaySortedBooks(string sortBy)
+{
+    if (head == nullptr)
+    {
+        cout << "The library is empty." << endl;
+        return;
+    }
+
+    // Copy the linked list to an array
+    int listSize = 0;
+    Book *temp = head;
+    while (temp != nullptr)
+    {
+        listSize++;
+        temp = temp->next;
+    }
+    Book *bookArray = new Book[listSize];
+    temp = head;
+    for (int i = 0; i < listSize; i++)
+    {
+        bookArray[i] = *temp;
+        temp = temp->next;
+    }
+
+    // Sort the array using insertSort
+    for (int i = 1; i < listSize; i++)
+    {
+        Book key = bookArray[i];
+        int j = i - 1;
+        while (j >= 0 && (
+            (sortBy == "bookID" && bookArray[j].bookID > key.bookID) ||
+            (sortBy == "title" && bookArray[j].title > key.title) ||
+            (sortBy == "author" && bookArray[j].author > key.author)))
+        {
+            bookArray[j + 1] = bookArray[j];
+            j--;
+        }
+        bookArray[j + 1] = key;
+    }
+
+    // Display the sorted array
+    cout << "-----------------------------------" << endl;
+    cout << "List of books sorted by " << sortBy << ":" << endl;
+    for (int i = 0; i < listSize; i++)
+    {
+        cout << "Book ID: " << bookArray[i].bookID << endl;
+        cout << "Book title: " << bookArray[i].title << endl;
+        cout << "Author: " << bookArray[i].author << endl;
+        cout << "Category: " << bookArray[i].genre << endl;
+        cout << "Publishing company: " << bookArray[i].publisher << endl;
+        cout << "Quantity: " << bookArray[i].quantity << endl;
+        cout << "-----------------------------------" << endl;
+    }
+    // Delete the temporary array
+    delete[] bookArray;
+}
 void returnToPreviousFunction() {
     int input;
     do {
@@ -395,7 +399,7 @@ void returnToPreviousFunction() {
         std::cin >> input;
     } while (input != 0);
     std::cout << "Exiting.....";
-    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
     system("cls");
 }
 void exportData(string filename)
@@ -475,7 +479,7 @@ void InterfaceBook()
             string newtheloai;
             string newnxb;
             int newquantity;
-            cout << "Enter the field of book you want to find to adjust" << endl;
+            cout << "Enter the feild of book you want to adjust" << endl;
             do{
                 cout << "================= MENU =================" << endl;
                 cout << "1. ID" << endl;
@@ -557,8 +561,8 @@ void InterfaceBook()
             cin >> bookID;            
 			cout << "Enter the book ID to be deleted: ";
             deleteBook(bookID);
-            std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // d?ng chuong trình trong 2 giây
-            system("cls"); // xóa màn hình
+            std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // d?ng chuong trÃ¬nh trong 2 giÃ¢y
+            system("cls"); // xÃ³a mÃ n hÃ¬nh
             break;
         }
         case 5:
@@ -657,6 +661,8 @@ void InterfaceBook()
                     system("cls");
 					cout << "Arrange by title:\n";
                     displaySortListByTree(TITLE);
+//                    string sortBy = "title";
+//                    displaySortedBooks(sortBy);
                     returnToPreviousFunction();
                     break;
                 }
@@ -665,6 +671,8 @@ void InterfaceBook()
                     system("cls");
 					cout << "Arrange by ID:\n";
                     displaySortListByTree(BOOK_ID);
+//                    string sortBy = "bookID";
+//                    displaySortedBooks(sortBy);
                     returnToPreviousFunction();
                     break;
                 }
@@ -673,6 +681,9 @@ void InterfaceBook()
                     system("cls");
 					cout << "Arrange by author:\n";
                     displaySortListByTree(AUTHOR);
+
+//                    string sortBy = "author";
+//                    displaySortedBooks(sortBy);
                     returnToPreviousFunction();
                     break;
                 }
@@ -709,21 +720,19 @@ void exportDatahuman(string filename)
 {
     ofstream outputFile(filename);
     BanDoc *temp = headDoc;
+
     while (temp != nullptr)
     {
-        outputFile << temp->IDSV << " " << temp->name << " " << temp->birthdate << " " << temp->gioitinh << " " << temp->number << " " << temp->cls << endl;
+        outputFile << temp->IDSV << " " << temp->name << " " << endl;
         temp = temp->next;
     }
+
     outputFile.close();
 }
-void addBanDoc(string IDSV, string name, string birthdate, string gioitinh, string number, string cls) {
+void addBanDoc(string IDSV, string name) {
     BanDoc *newBanDoc = new BanDoc;
     newBanDoc->IDSV = IDSV;
     newBanDoc->name = name;
-    newBanDoc->birthdate = birthdate;
-    newBanDoc->gioitinh = gioitinh;
-    newBanDoc->number = number;
-    newBanDoc->cls = cls;
     newBanDoc->next = nullptr;
     
     if (headDoc == nullptr) {
@@ -751,10 +760,10 @@ void readFromFilehuman(string filename)
     while (getline(inFile, line))
     {
         istringstream iss(line);
-        string IDSV, name, birthdate, gioitinh, number, cls;
-        if (iss >> IDSV >> name >> birthdate >> gioitinh >> number >>cls)
+        string IDSV, name;
+        if (iss >> IDSV >> name)
         {
-            addBanDoc(IDSV, name, birthdate, gioitinh, number, cls);
+            addBanDoc(IDSV, name);
         }
     }
     inFile.close();
@@ -786,30 +795,22 @@ void DeleteBanDoc(string IDSV) {
 }
 void DisplayBanDoc() {
     BanDoc *temp = headDoc;
-    cout << "+------------+-------------------------------------------------------+------------------------+-------------------------+------------------------------------------+-------------+" << endl;
-    cout << "|ID          | Name                                                  | Sex                    | Date of birth           | Number                                   | Class       |" << endl;
-    cout << "+------------+-------------------------------------------------------+------------------------+-------------------------+------------------------------------------+-------------+" << endl;
+    
     while (temp != nullptr) {
-        cout << "| " << setw(10) << left << temp->IDSV << " | " << setw(53) << left << temp->name << " | " << setw(22) << left << temp->gioitinh << " | " << setw(23) << left << temp->birthdate << " | " << setw(40) << left << temp->number << " | " << setw(11) << left << temp->cls << " |" << endl;
-    	cout << "+------------+-------------------------------------------------------+------------------------+-------------------------+------------------------------------------+-------------+" << endl;
+        cout << "IDSV: " << temp->IDSV << ", name: " << temp->name << endl;
         temp = temp->next;
     }
 }
 void InterfaceBanDoc() {
-	int sort;
-	int find;
 	system("cls");
 	readFromFilehuman("human.txt");
     while (true) {
         cout << "========== MENU ==========" << endl;
         cout << "1. Show reader information" << endl;
         cout << "2. Add reader" << endl;
-        cout << "3. Adjust information" <<endl;
-        cout << "4. Delete reader" << endl;
-        cout << "5. Find human" << endl;
-        cout << "6. Arrange list" << endl;
-        cout << "7. Save information" << endl;
-        cout << "8. Exit" << endl;
+        cout << "3. Delete reader" << endl;
+        cout << "4. Save information" << endl;
+        cout << "5. Exit" << endl;
         cout << "==========================" << endl;
         cout << "Select choice: ";
         int choice;
@@ -819,105 +820,21 @@ void InterfaceBanDoc() {
             case 1:
                 system("cls");
 				DisplayBanDoc();
-				returnToPreviousFunction();
                 break;
             case 2:
                 {
                     system("cls");
 					string IDSV;
                     string name;
-                    string birthdate; string gioitinh; string number; string cls;
                     cout << "Enter student's ID: ";
                     cin >> IDSV;
                     cout << "Enter student's name: ";
                     cin >> name;
-                    cout << "Enter student's birthday: ";
-                    cin >> birthdate;
-                    cout << "Enter student's sex: ";
-                    cin >> gioitinh;
-                    cout << "Enter student's number: ";
-                    cin >> number;
-                    cout << "Enter student's class: ";
-                    cin >> cls;
-                    addBanDoc(IDSV, name, birthdate, gioitinh, number, cls);
+                    addBanDoc(IDSV, name);
                     cout << "Add succes!" << endl;
-                    returnToPreviousFunction();
                 }
                 break;
             case 3:
-		        {
-		        	string newname; string newbirthdate; string newgioitinh; string newnumber; string newcls;
-		        	system("cls");
-		            cout << "Enter the field of human you want to find to adjust" << endl;
-		            do{
-		                cout << "================= MENU =================" << endl;
-		                cout << "1. ID" << endl;
-		                cout << "2. Name" << endl;
-		                cout << "0. Exit the program" << endl;
-		                cout << "========================================" << endl;
-		                cout << "Select function (0-2): ";
-						cin >> find;
-						switch (find){ 
-						case 1:
-						{
-							system("cls");
-							string ID;
-							string IDSV = "IDSV"; 
-							cout << "Find by IDSV: ";       	
-				    		cin >> ID;
-				    		findHuman(ID,IDSV);
-				    		BanDoc *humanToFind = searchHuman(ID, IDSV);
-		    				if (humanToFind == nullptr)
-		    				{
-								break;
-		    				}
-				            cout << "Enter new name: ";
-				            cin >> newname;
-				            cout << "Enter new sex: ";
-				            cin >> newgioitinh;
-				            cout << "Enter new number: ";
-				            cin >> newnumber;
-				            cout << "Enter new Birth day: ";
-				            cin >> newbirthdate;
-				            cout << "Enter new class: ";
-				            cin >> newcls;
-				            adjustHuman(ID, IDSV, newname, newbirthdate, newgioitinh, newnumber, newcls);
-				            returnToPreviousFunction();		    		
-				            break;
-						} 
-						case 2:
-						{
-						    system("cls"); 
-							string nameSV;
-							string name = "name";       	
-				        	cout << "Find by name: ";
-				    		cin >> nameSV;
-				    		findHuman(nameSV,name);
-							BanDoc *humanToFind = searchHuman(nameSV,name);
-		    				if (humanToFind == nullptr)
-		    				{
-								break;
-		    				}
-							cout << "Enter new name: ";
-				            cin >> newname;
-				            cout << "Enter new sex: ";
-				            cin >> newgioitinh;
-				            cout << "Enter new number: ";
-				            cin >> newnumber;
-				            cout << "Enter new Birth day: ";
-				            cin >> newbirthdate;
-				            cout << "Enter new class: ";
-				            cin >> newcls;
-				            adjustHuman(nameSV, name, newname, newbirthdate, newgioitinh, newnumber, newcls);
-				            returnToPreviousFunction();	
-				            break;
-						}  			
-						}
-					}while (find != 0);
-					system("cls");
-		            break;
-		        }
-            case 4:
                 {
                     system("cls");
 					string IDSV;
@@ -926,163 +843,23 @@ void InterfaceBanDoc() {
                     DeleteBanDoc(IDSV);
                     cout << "Delete success!" << endl;
                 }
-                returnToPreviousFunction();
                 break;
-            case 5:
-		        {
-		        	system("cls");
-					do{
-		                cout << "================= MENU =================" << endl;
-		                cout << "1. Find by IDSV" << endl;
-		                cout << "2. Find by name" << endl;
-		                cout << "3. Find by sex" << endl;
-		                cout << "4. Find by number" << endl;
-		                cout << "5. Find by birthdate" << endl;
-		                cout << "6. Find by class" << endl;
-		                cout << "0. Exit the program" << endl;
-		                cout << "========================================" << endl;
-		                cout << "Select function (0-6): ";
-						cin >> find;
-						switch (find){ 
-						case 1:
-						{ 
-							system("cls");
-							string ID;
-							string IDSV = "IDSV"; 
-							cout << "Find by IDSV: ";       	
-				    		cin >> ID;
-				    		findHuman(ID,IDSV);
-				    		returnToPreviousFunction();
-				            break;
-						} 
-						case 2:
-						{ 
-							system("cls");
-							string nameSV;
-							string name = "name";       	
-				        	cout << "Find by name: ";
-				    		cin >> nameSV;
-				    		findHuman(nameSV,name);
-				    		returnToPreviousFunction();
-				            break;
-						} 
-						case 3:
-						{ 
-							system("cls");
-							string sex; 
-							string gioitinh = "gioitinh";       	
-				        	cout << "Find by sex:";
-				    		cin >> sex;
-				    		findHuman(sex,gioitinh);
-				    		returnToPreviousFunction();
-				            break;
-						} 
-						case 4:
-						{ 
-							system("cls");
-							string numberSV;
-							string number = "number";       	
-				        	cout << "Find by number:";
-				    		cin >> numberSV;
-				    		findHuman(numberSV,number);
-				    		returnToPreviousFunction();
-				            break;
-						}
-						case 5:
-						{ 
-							system("cls");
-							string birthday;
-							string birthdate = "birthdate";        	
-				        	cout << "Find by birthday:";
-				    		cin >> birthday;
-				    		findHuman(birthday,birthdate);
-				    		returnToPreviousFunction();
-				            break;
-						}
-						case 6:
-						{ 
-							system("cls");
-							string Class;
-							string cls = "cls";        	
-				        	cout << "Find by class:";
-				    		cin >> Class;
-				    		findHuman(Class,cls);
-				    		returnToPreviousFunction();
-				            break;
-						}  			
-						}
-					}while (find != 0);
-					system("cls");
-		            break;
-		        }
-		    case 6:
-		    	system("cls");
-	            do
-	            {
-	
-	                cout << "================= MENU =================" << endl;
-	                cout << "1. Arrange by name" << endl;
-	                cout << "2. Arrange by IDSV" << endl;
-	                cout << "3. Arrange by class" << endl;
-	                cout << "0. Exit the program" << endl;
-	                cout << "========================================" << endl;
-	                cout << "Select function (0-3): ";
-	                cin >> sort;
-	                switch (sort)
-	                {
-	                case 1:
-	                {
-	                    system("cls");
-						cout << "Arrange by name:\n";
-	                    string sortBy = "name";
-	                    displaySortedHuman(sortBy);
-	                    returnToPreviousFunction();
-	                    break;
-	                }
-	                case 2:
-	                {
-	                    system("cls");
-						cout << "Arrange by IDSV:\n";
-	                    string sortBy = "IDSV";
-	                    displaySortedHuman(sortBy);
-	                    returnToPreviousFunction();
-	                    break;
-	                }
-	                case 3:
-	                {
-	                    system("cls");
-						cout << "Arrange by class:\n";
-	                    string sortBy = "cls";
-	                    displaySortedHuman(sortBy);
-	                    returnToPreviousFunction();
-	                    break;
-	                }
-	                case 0:
-	                {
-	                    system("cls");
-						cout << "Exiting...." << endl;
-						system("cls");
-	                    break;
-	                }
-	                }
-	            } while (sort != 0);
-	            break;
-            case 7:
+            case 4:
 		        {
 		            system("cls");
 					exportDatahuman("human.txt");
 		            cout << "Data saved to file human.txt" << endl;
-		            std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // d?ng chuong trình trong 2 giây
-		            system("cls"); // xóa màn hình
+		            std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // d?ng chuong trÃ¬nh trong 2 giÃ¢y
+		            system("cls"); // xÃ³a mÃ n hÃ¬nh
 		            break;
 		        }
-            case 8:
+            case 5:
                 return;
             default:
             	system("cls");
                 cout << "Error, please select again!" << endl;
-                std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // d?ng chuong trình trong 2 giây
-		        system("cls"); // xóa màn hình
+                std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // d?ng chuong trÃ¬nh trong 2 giÃ¢y
+		        system("cls"); // xÃ³a mÃ n hÃ¬nh
         }
         
         cout << endl;
@@ -1121,13 +898,13 @@ void Interface_main(){
                     break;
           case 3:
             cout << "Good bye!" << endl;
-            std::this_thread::sleep_for(std::chrono::milliseconds(500)); // d?ng chuong trình trong 2 giây
-            system("cls"); // xóa màn hình
+            std::this_thread::sleep_for(std::chrono::milliseconds(500)); // d?ng chuong trÃ¬nh trong 2 giÃ¢y
+            system("cls"); // xÃ³a mÃ n hÃ¬nh
             break;
         default:
             cout << "Invalid function! Please choose another function." << endl;
-            std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // d?ng chuong trình trong 2 giây
-            system("cls"); // xóa màn hình
+            std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // d?ng chuong trÃ¬nh trong 2 giÃ¢y
+            system("cls"); // xÃ³a mÃ n hÃ¬nh
             break;          
 		}
 		cout << endl;
@@ -1136,5 +913,4 @@ void Interface_main(){
 int main(){
 	Interface_main();
 }
-
 
